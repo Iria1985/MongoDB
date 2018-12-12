@@ -1,0 +1,75 @@
+mongodump -u mdemuz04 -p cnQK2hI8 -h musestd-db --port 27017 --authenticationDatabase admin --db musestd --gzip --archive=/tmp/cronned_backup_mongo_db.gz
+OK
+---------------
+mongo admin -u mdemuz04 -p cnQK2hI8 --eval "db.createRole({ role: 'DumpRole',  privileges: [ { resource: { db: 'musestd', collection: 'system.indexes' }, actions: [ 'find'] }, { resource: { db: 'musestd', collection: 'blacklist' }, actions: [ 'find', 'listCollections', 'listIndexes', 'indexStats'] } ], roles: [] } ); "
+mongo admin -u mdemuz04 -p cnQK2hI8 --eval "db.createUser({ user: 'mwpmuz09', pwd: 'ehv5dUL2', roles: ['DumpRole'] });"
+
+mongodump -u mwpmuz09 -p ehv5dUL2 -h musestd-db --port 27017 --authenticationDatabase admin --db musestd --gzip --archive=/tmp/cronned_backup_mongo_db.gz
+Failed: error getting collections for database `musestd`: error running `listCollections`. Database: `musestd` Err: not authorized on musestd to execute command { listCollections: 1, cursor: {}, $readPreference: { mode: "secondaryPreferred" }, $db: "musestd" }
+---------------
+db.getUser("mdemuz04")
+{
+        "_id" : "admin.mdemuz04",
+        "user" : "mdemuz04",
+        "db" : "admin",
+        "roles" : [
+                {
+                        "role" : "root",
+                        "db" : "admin"
+                }
+        ],
+        "mechanisms" : [
+                "SCRAM-SHA-1",
+                "SCRAM-SHA-256"
+        ]
+}
+use musestd
+db.getUsers()
+[ ]
+db.createUser({ user: 'mwpmuz09', pwd: 'ehv5dUL2', roles: [{ 'role' : 'root', 'db' : 'admin' }] });
+Successfully added user: {
+        "user" : "mwpmuz09",
+        "roles" : [
+                {
+                        "role" : "root",
+                        "db" : "admin"
+                }
+        ]
+}
+db.dropUser("mwpmuz09")
+ mongo admin -u mdemuz04 -p cnQK2hI8 --eval "db.createUser({ user: 'mwpmuz09', pwd: 'ehv5dUL2', roles: [{ 'role' : 'root', 'db' : 'admin' }] });"
+Failed: error getting collections for database `musestd`: error running `listCollections`. Database: `musestd` Err: not authorized on musestd to execute command { listCollections: 1, cursor: {}, $readPreference: { mode: "secondaryPreferred" }, $db: "musestd" }
+---------------
+
+mongo admin -u mdemuz04 -p cnQK2hI8
+
+db.dropUser("mwpmuz09")
+true
+
+db.addUser({user:"mwpmuz09", pwd: "ehv5dUL2", roles: ["userAdminAnyDatabase"]})
+2018-12-11T08:20:26.077+0000 E QUERY    [js] TypeError: db.addUser is not a function 
+db.createUser({user:"mwpmuz09", pwd: "ehv5dUL2", roles: ["userAdminAnyDatabase"]})
+Successfully added user: { "user" : "mwpmuz09", "roles" : [ "userAdminAnyDatabase" ] }
+mongodump -u mwpmuz09 -p ehv5dUL2 -h musestd-db --port 27017 --authenticationDatabase admin --db musestd --gzip --archive=/tmp/cronned_backup_mongo_db.gz
+Failed: error getting collections for database `musestd`: error running `listCollections`. Database: `musestd` Err: not authorized on musestd to execute command { listCollections: 1, cursor: {}, $readPreference: { mode: "secondaryPreferred" }, $db: "musestd" }
+---
+use admin
+db.createUser({ user: 'mwpmuz09', pwd: 'ehv5dUL2', roles: [{ 'role' : 'root', 'db' : 'admin' }] });
+2018-12-11T08:24:18.612+0000 E QUERY    [js] Error: couldn't add user: User "mwpmuz09@admin" already exists 
+db.dropUser("mwpmuz09")
+true
+
+use admin
+switched to db admin
+db.createUser({ user: 'mwpmuz09', pwd: 'ehv5dUL2', roles: [{ 'role' : 'root', 'db' : 'admin' }] });
+Successfully added user: {
+        "user" : "mwpmuz09",
+        "roles" : [
+                {
+                        "role" : "root",
+                        "db" : "admin"
+                }
+        ]
+}
+
+
