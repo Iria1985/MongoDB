@@ -1,1 +1,76 @@
 
+mongodump -u USUARIOADMIN -p PASSUSUARIOADMIN -h HOST --port 27017 --authenticationDatabase admin --db BASEDATOS --gzip --archive=/tmp/cronned_backup_mongo_db.gz
+OK
+---------------
+mongo admin -u USUARIOADMIN -p PASSUSUARIOADMIN --eval "db.createRole({ role: 'DumpRole',  privileges: [ { resource: { db: 'BASEDATOS', collection: 'system.indexes' }, actions: [ 'find'] }, { resource: { db: 'BASEDATOS', collection: 'blacklist' }, actions: [ 'find', 'listCollections', 'listIndexes', 'indexStats'] } ], roles: [] } ); "
+mongo admin -u USUARIOADMIN -p PASSUSUARIOADMIN --eval "db.createUser({ user: 'USUARIOBACKUPS', pwd: 'PASSUSUARIOBACKUPS', roles: ['DumpRole'] });"
+
+mongodump -u USUARIOBACKUPS -p PASSUSUARIOBACKUPS -h HOST --port 27017 --authenticationDatabase admin --db BASEDATOS --gzip --archive=/tmp/cronned_backup_mongo_db.gz
+Failed: error getting collections for database `BASEDATOS`: error running `listCollections`. Database: `BASEDATOS` Err: not authorized on BASEDATOS to execute command { listCollections: 1, cursor: {}, $readPreference: { mode: "secondaryPreferred" }, $db: "BASEDATOS" }
+---------------
+db.getUser("USUARIOADMIN")
+{
+        "_id" : "admin.USUARIOADMIN",
+        "user" : "USUARIOADMIN",
+        "db" : "admin",
+        "roles" : [
+                {
+                        "role" : "root",
+                        "db" : "admin"
+                }
+        ],
+        "mechanisms" : [
+                "SCRAM-SHA-1",
+                "SCRAM-SHA-256"
+        ]
+}
+use BASEDATOS
+db.getUsers()
+[ ]
+db.createUser({ user: 'USUARIOBACKUPS', pwd: 'PASSUSUARIOBACKUPS', roles: [{ 'role' : 'root', 'db' : 'admin' }] });
+Successfully added user: {
+        "user" : "USUARIOBACKUPS",
+        "roles" : [
+                {
+                        "role" : "root",
+                        "db" : "admin"
+                }
+        ]
+}
+db.dropUser("USUARIOBACKUPS")
+ mongo admin -u USUARIOADMIN -p PASSUSUARIOADMIN --eval "db.createUser({ user: 'USUARIOBACKUPS', pwd: 'PASSUSUARIOBACKUPS', roles: [{ 'role' : 'root', 'db' : 'admin' }] });"
+Failed: error getting collections for database `BASEDATOS`: error running `listCollections`. Database: `BASEDATOS` Err: not authorized on BASEDATOS to execute command { listCollections: 1, cursor: {}, $readPreference: { mode: "secondaryPreferred" }, $db: "BASEDATOS" }
+---------------
+
+mongo admin -u USUARIOADMIN -p PASSUSUARIOADMIN
+
+db.dropUser("USUARIOBACKUPS")
+true
+
+db.addUser({user:"USUARIOBACKUPS", pwd: "PASSUSUARIOBACKUPS", roles: ["userAdminAnyDatabase"]})
+2018-12-11T08:20:26.077+0000 E QUERY    [js] TypeError: db.addUser is not a function 
+db.createUser({user:"USUARIOBACKUPS", pwd: "PASSUSUARIOBACKUPS", roles: ["userAdminAnyDatabase"]})
+Successfully added user: { "user" : "USUARIOBACKUPS", "roles" : [ "userAdminAnyDatabase" ] }
+mongodump -u USUARIOBACKUPS -p PASSUSUARIOBACKUPS -h HOST --port 27017 --authenticationDatabase admin --db BASEDATOS --gzip --archive=/tmp/cronned_backup_mongo_db.gz
+Failed: error getting collections for database `BASEDATOS`: error running `listCollections`. Database: `BASEDATOS` Err: not authorized on BASEDATOS to execute command { listCollections: 1, cursor: {}, $readPreference: { mode: "secondaryPreferred" }, $db: "BASEDATOS" }
+---
+use admin
+db.createUser({ user: 'USUARIOBACKUPS', pwd: 'PASSUSUARIOBACKUPS', roles: [{ 'role' : 'root', 'db' : 'admin' }] });
+2018-12-11T08:24:18.612+0000 E QUERY    [js] Error: couldn't add user: User "USUARIOBACKUPS@admin" already exists 
+db.dropUser("USUARIOBACKUPS")
+true
+
+use admin
+switched to db admin
+db.createUser({ user: 'USUARIOBACKUPS', pwd: 'PASSUSUARIOBACKUPS', roles: [{ 'role' : 'root', 'db' : 'admin' }] });
+Successfully added user: {
+        "user" : "USUARIOBACKUPS",
+        "roles" : [
+                {
+                        "role" : "root",
+                        "db" : "admin"
+                }
+        ]
+}
+
+
