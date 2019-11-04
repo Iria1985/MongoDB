@@ -1,6 +1,6 @@
 # MongoDB
+VARIABLES USADAS
 <pre>
-VARIABLES USADAS 
 db_mongo_compose_name: "{{appli_url}}-db"
 db_mongo_database_name: "nombredelaplicacion"
 db_mongo_username: "usuarioadmin"
@@ -16,21 +16,29 @@ mongo admin -u {{db_mongo_username}} -p {{db_mongo_user_password}} <<EOF
 use admin
 db.createUser({ user: '{{db_mongo_user_backup}}', pwd: '{{db_mongo_password_backup}}', roles: [ { 'role' : 'root', 'db' : 'admin' } ] }); 
 EOF
-
+</pre>
 OBTENER LOS USUARIOS DE UNA BASE DE DATOS
+<pre>
 use basededatos
 db.getUsers()
+</pre>
 
 ELIMINAR USUARIO
+<pre>
 db.dropUser("nombreusuario")
+</pre>
 
-COMANDOS BÁSICOS 
+<h1>COMANDOS BÁSICOS</h1>
 
 CREAR BASE DE DATOS
+<pre>
 use test_indus;
+</pre>
 
 INTRODUCIR DATOS EN LA BASE DE DATOS
+<pre>
 db.test_indus.save({id:'1'});
+</pre>
 
 LISTAR DATOS DE UNA BASE DE DATOS
 db.test_indus.find();
