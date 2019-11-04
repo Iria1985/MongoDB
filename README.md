@@ -97,23 +97,23 @@ Hay dos formas. Mediante EOF y mediante --eval
 	2. EVAL: mongo admin -u usuarioadmin -p passusuarioadmin--eval "db.createUser({ user: 'usuarioacrear', pwd: 'passusuarioacrear', roles: [ { role: 'root', db: 'admin' } ] })";
 ```
 
-### COMO MONTAR UN REPLICASET CON SHARDING (Ejemplo: PSATracker)
+### COMO MONTAR UN REPLICASET CON SHARDING
 
 ⚠ Recomendable hacer un backup de la base de datos ⚠
 Listado estructura que tenemos montada: 
-`* Nodo 1: contiene 3 contenedores`
-`** contenedor-mongors1n1`
-`** contenedor-mongocfg1`
-`** contenedor-mongos1`
-`* Nodo 2: contiene 3 contenedores`
-`** contenedor-mongors1n2`
-`** contenedor-mongocfg2`
-`** contenedor-mongos2`
-`* Nodo 3: contiene 3 contenedores`
-`** contenedor-mongors1n3`
-`** contenedor-mongocfg3`
-`** contenedor-mongos3`
-
+* Nodo 1: contiene 3 contenedores
+  * contenedor-mongors1n1
+  * contenedor-mongocfg1
+  * contenedor-mongos1
+* Nodo 2: contiene 3 contenedores
+  * contenedor-mongors1n
+  * contenedor-mongocfg2
+  * contenedor-mongos2
+* Nodo 3: contiene 3 contenedores
+  * contenedor-mongors1n3
+  * contenedor-mongocfg3
+  * contenedor-mongos3
+```
 1. docker exec -it contenedor-mongocfg1 bash
 mongo <<EOF
 rs.initiate( {_id: "mongors1conf", configsvr: true, members: [
@@ -122,7 +122,9 @@ rs.initiate( {_id: "mongors1conf", configsvr: true, members: [
 { "_id" : 2, host : "contenedor-mongocfg3" }]});
 EOF
 exit
-	2. docker exec -it contenedor-mongors1n1 bash
+```
+2. docker exec -it contenedor-mongors1n1 bash
+```
 mongo <<EOF
 rs.initiate({_id : 'mongors1', members: [
 { _id : 0, host : 'contenedor-mongors1n1' },
@@ -130,35 +132,42 @@ rs.initiate({_id : 'mongors1', members: [
 { _id : 2, host : 'contenedor-mongors1n3' }]});
 EOF
 exit
-
+```
 3. docker exec -it contenedor-mongos1 bash
+```
 mongo <<EOF
 sh.addShard('mongors1/contenedor-mongors1n1');
 EOF
 exit
+```
+=================================================================================
+## TESTEO
+<pre>
+Si hasta aquí no petó nada, lo siguiente que puedes hacer es dentro 
+del terminal mongo de contenedor-mongos1
+Hacemos un checkeo general
+</pre>
+```
+docker exec -it contenedor-mongos1 bash
+mongo <<EOF
+sh.status();
+EOF
+exit
+```
+FIN TESTEO
+=================================================================================
+<pre>
+⚠ Si has realizado un backup, ahora realizamos un restore ⚠
 
-=================================================================================
-											TESTEO
-											Si hasta aquí no petó nada, lo siguiente que puedes hacer es dentro 
-											del terminal mongo de contenedor-mongos1
-											Hacemos un checkeo general
-											docker exec -it contenedor-mongos1 bash
-											mongo <<EOF
-											sh.status();
-											EOF
-											exit
-											FIN TESTEO
-=================================================================================
-						⚠ Si has realizado un backup, ahora realizamos un restore ⚠
-						
-						Copiamos los gz a la carpeta compartida
-						cp /users/backup/* /users/backup
-						cd /users/backup
-						gzip -d *.gz
-						Restauración BBDD --> Tocaría restaurar la copia de seguridad en contenedor-mongors1n1
-						docker exec -it contenedor-mongors1n1 bash
-						mongorestore --port 27017 -d basedatos /docker-entrypoint-initdb.d/backup/
-						exit
+Copiamos los gz a la carpeta compartida
+cp /users/backup/* /users/backup
+cd /users/backup
+gzip -d *.gz
+Restauración BBDD --> Tocaría restaurar la copia de seguridad en contenedor-mongors1n1
+docker exec -it contenedor-mongors1n1 bash
+mongorestore --port 27017 -d basedatos /docker-entrypoint-initdb.d/backup/
+exit
+</pre>
 =================================================================================
 	4. docker exec -it contenedor-mongos1 bash
 mongo <<EOF
