@@ -1,17 +1,18 @@
-# MongoDB
-<h1> VARIABLES USADAS </h1>
-<pre>
+#MongoDB
+#VARIABLES USADAS
+<p>
 db_mongo_compose_name: "{{appli_url}}-db"
 db_mongo_database_name: "nombredelaplicacion"
 db_mongo_username: "usuarioadmin"
 db_mongo_user_password: "passadmin"
 db_mongo_user_backup: "usuariobackup"
 db_mongo_password_backup: "passusuariobackup"
-</pre>
+</p>
 
 <h1> GESTIÓN USUARIOS </h1>
 
-<h2> SCRIPT DE CREACIÓN DE USUARIO CON PERMISOS PARA DUMP <h2>
+<h2> SCRIPT DE CREACIÓN DE USUARIO CON PERMISOS PARA DUMP </h2>
+
 <pre>
 #!/bin/bash
 mongo admin -u {{db_mongo_username}} -p {{db_mongo_user_password}} <<EOF
@@ -20,13 +21,13 @@ db.createUser({ user: '{{db_mongo_user_backup}}', pwd: '{{db_mongo_password_back
 EOF
 </pre>
 
-OBTENER LOS USUARIOS DE UNA BASE DE DATOS
+<h2>OBTENER LOS USUARIOS DE UNA BASE DE DATOS </h2>
 <pre>
 use basededatos
 db.getUsers()
 </pre>
 
-ELIMINAR USUARIO
+<h2> ELIMINAR USUARIO <h2>
 <pre>
 db.dropUser("nombreusuario")
 </pre>
