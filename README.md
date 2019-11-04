@@ -140,7 +140,7 @@ sh.addShard('mongors1/contenedor-mongors1n1');
 EOF
 exit
 ```
-=================================================================================
+==============================================================================
 ## TESTEO
 <pre>
 Si hasta aquí no petó nada, lo siguiente que puedes hacer es dentro 
@@ -155,7 +155,7 @@ EOF
 exit
 ```
 FIN TESTEO
-=================================================================================
+==============================================================================
 <pre>
 ⚠ Si has realizado un backup, ahora realizamos un restore ⚠
 
@@ -169,16 +169,22 @@ mongorestore --port 27017 -d basedatos /docker-entrypoint-initdb.d/backup/
 exit
 </pre>
 =================================================================================
-	4. docker exec -it contenedor-mongos1 bash
+4. docker exec -it contenedor-mongos1 bash
+```
 mongo <<EOF
 sh.enableSharding('psaTracker');
 EOF
 exit
+```
+<pre>
 Y con esto estaría todo 👌
+</pre>
 
-COMO MONTAR SOLO REPLICACION MONGO (Ejemplo: MuseSTD)
-
+## COMO MONTAR SOLO REPLICACION MONGO
+<pre>
 3 nodos 3 contenedores mongo, cada 1 se ata a un nodo.
+</pre>
+```
 container_name: "{{db_mongo_compose_name}}_primary"
  environment:
  - "constraint:node=={{ node1 }}"
@@ -193,23 +199,27 @@ container_name: "{{db_mongo_compose_arbiter}}_primary"
  environment:
  - "constraint:node=={{ node3 }}"
 command: {{db_mongo_command_repl}}
+```
 
-
-¿Qué comando estamos ejecutando en los contenedores?
-
+#### ¿Qué comando estamos ejecutando en los contenedores?
+```
 db_mongo_command_repl_primary: "/docker-entrypoint-initdb.d/01-init_replica.sh" 
 db_mongo_command_repl_secondary: "mongod --smallfiles --config {{db_mongo_config_container_file}} --replSet {{db_mongo_replicaset}}"
 db_mongo_command_repl_arbiter: "mongod --smallfiles --config {{db_mongo_config_container_file}} --replSet {{db_mongo_replicaset}}"
-
+```
+<pre>
 Variables :)
-
+</pre>
+```
 db_mongo_config_path: "{{ appli_remote_files_path }}/dbconfig"
 db_mongo_config_container_file: "/mongoconf/mongodb.conf"
 db_mongo_log_file: "/mongoconf/mongodb.log"
 db_mongo_replicaset: "replica"
-
-
+```
+<pre>
 Volúmenes que tenemos en los servicios del compose en esos contenedores:
+</pre>
+```
   "{{db_mongo_compose_name}}_primary":
     volumes:
       - "{{db_mongo_data_path}}/db:{{db_mongo_shared_folder}}"
@@ -223,20 +233,26 @@ Volúmenes que tenemos en los servicios del compose en esos contenedores:
     volumes:
       - "{{db_mongo_data_path}}/db:{{db_mongo_shared_folder}}"
       - "{{db_mongo_config_path}}:/mongoconf"
-
+```
+<pre>
 Variables :)
+</pre>
+```
 db_mongo_data_path: "{{appli_remote_root_path}}/data"
 db_mongo_shared_folder: "/data/db"
-
+```
+<pre>
 Scripts y config que necesitamos:
+</pre>
+```
 mongo_keyfile
 mongodb.conf
 01-init_replica.sh 
 02-Replicaset.sh
 03-BackupUserCreate.sh
-
-¿Qué contenido tienen estos archivos?
-
+```
+#### ¿Qué contenido tienen estos archivos?
+<pre>
 cat mongo_keyfile
 123456789
 
@@ -246,12 +262,15 @@ security:
 net:
    port: 27017
 
-cat 01-init_replica.sh 
+cat 01-init_replica.sh
+</pre>
+```
 #!/bin/bash
 mongod --smallfiles --config {{db_mongo_config_container_file}} --replSet {{db_mongo_replicaset}} --bind_ip_all --fork --logpath /mongoconf/mongodb.log
 while :; do sleep 1; done 
-
+```
 cat 02-Replicaset.sh
+```
 #!/bin/bash
 mongo << EOF
 rs.initiate( {_id: "replica", members: [
@@ -259,15 +278,17 @@ rs.initiate( {_id: "replica", members: [
 { "_id" : 1, host : "contenedor-mongodb_secondary:27017" },
 { "_id" : 2, host : "contenedor-mongodb_arbiter:27017" }]});
 EOF
-
+```
 Cat 03-BackupUserCreate.sh
+```
 #!/bin/bash
 mongo << EOF
 use admin
 db.createUser({ user: '{{db_mongo_user_backup}}', pwd: '{{db_mongo_password_backup}}', roles: [ { 'role' : 'root', 'db' : 'admin' } ] }); 
 EOF
-
+```
 Importante hay que añadir en el launch después del prepare env las siguientes tasks.
+```
 - hosts: "{{ target | default('nodes')}}"
   become: yes
   become_method: sudo
@@ -285,7 +306,7 @@ Importante hay que añadir en el launch después del prepare env las siguientes 
       owner: 999
       group: 999
       mode: 0644 
-
+```
+<pre>
 Una vez realizado el deploy, nos conectamos al mongo primario.
-
 </pre>
