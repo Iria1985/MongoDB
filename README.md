@@ -154,7 +154,7 @@ sh.status();
 EOF
 exit
 ```
-FIN TESTEO
+## FIN TESTEO
 
 <pre>
 ⚠ Si has realizado un backup, ahora realizamos un restore ⚠
