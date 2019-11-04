@@ -13,13 +13,13 @@ db_mongo_password_backup: "passusuariobackup"
 
 ### SCRIPT DE CREACIÓN DE USUARIO CON PERMISOS PARA DUMP
 
-<pre>
+```
 #!/bin/bash
 mongo admin -u {{db_mongo_username}} -p {{db_mongo_user_password}} <<EOF
 use admin
 db.createUser({ user: '{{db_mongo_user_backup}}', pwd: '{{db_mongo_password_backup}}', roles: [ { 'role' : 'root', 'db' : 'admin' } ] }); 
 EOF
-</pre>
+```
 
 <h2>OBTENER LOS USUARIOS DE UNA BASE DE DATOS </h2>
 <pre>
