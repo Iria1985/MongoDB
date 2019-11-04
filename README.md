@@ -1,16 +1,15 @@
 # MongoDB
 <pre>
 VARIABLES USADAS 
-appli_url: "musestd"
 db_mongo_compose_name: "{{appli_url}}-db"
 db_mongo_database_name: "nombredelaplicacion"
 db_mongo_username: "usuarioadmin"
 db_mongo_user_password: "passadmin"
 db_mongo_user_backup: "usuariobackup"
 db_mongo_password_backup: "passusuariobackup"
-
+</pre>
 GESTIÓN USUARIOS
-
+<pre>
 SCRIPT DE CREACIÓN DE USUARIO CON PERMISOS PARA DUMP
 #!/bin/bash
 mongo admin -u {{db_mongo_username}} -p {{db_mongo_user_password}} <<EOF
