@@ -155,7 +155,7 @@ EOF
 exit
 ```
 FIN TESTEO
-==============================================================================
+
 <pre>
 ⚠ Si has realizado un backup, ahora realizamos un restore ⚠
 
@@ -307,6 +307,4 @@ Importante hay que añadir en el launch después del prepare env las siguientes 
       group: 999
       mode: 0644 
 ```
-<pre>
 Una vez realizado el deploy, nos conectamos al mongo primario.
-</pre>
