@@ -101,18 +101,18 @@ Hay dos formas. Mediante EOF y mediante --eval
 
 ⚠ Recomendable hacer un backup de la base de datos ⚠
 Listado estructura que tenemos montada: 
-* Nodo 1: contiene 3 contenedores
-** contenedor-mongors1n1
-** contenedor-mongocfg1
-** contenedor-mongos1
-* Nodo 2: contiene 3 contenedores
-** contenedor-mongors1n2
-** contenedor-mongocfg2
-** contenedor-mongos2
-* Nodo 3: contiene 3 contenedores
-** contenedor-mongors1n3
-** contenedor-mongocfg3
-** contenedor-mongos3
+`* Nodo 1: contiene 3 contenedores`
+`** contenedor-mongors1n1`
+`** contenedor-mongocfg1`
+`** contenedor-mongos1`
+`* Nodo 2: contiene 3 contenedores`
+`** contenedor-mongors1n2`
+`** contenedor-mongocfg2`
+`** contenedor-mongos2`
+`* Nodo 3: contiene 3 contenedores`
+`** contenedor-mongors1n3`
+`** contenedor-mongocfg3`
+`** contenedor-mongos3`
 
 1. docker exec -it contenedor-mongocfg1 bash
 mongo <<EOF
