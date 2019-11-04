@@ -11,7 +11,6 @@ db_mongo_password_backup: "passusuariobackup"
 
 <h1> GESTIÓN USUARIOS </h1>
 
-<pre>
 <h2> SCRIPT DE CREACIÓN DE USUARIO CON PERMISOS PARA DUMP <h2>
 <pre>
 #!/bin/bash
