@@ -1,5 +1,5 @@
 # MongoDB
-
+<pre>
 VARIABLES USADAS 
 appli_url: "musestd"
 db_mongo_compose_name: "{{appli_url}}-db"
@@ -250,4 +250,6 @@ Importante hay que añadir en el launch después del prepare env las siguientes 
       group: 999
       mode: 0644 
 
-Una vez realizado el deploy, nos conectamos al mongo primario, 
+Una vez realizado el deploy, nos conectamos al mongo primario.
+
+</pre>
