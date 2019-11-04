@@ -1,5 +1,5 @@
-#MongoDB
-#VARIABLES USADAS
+# MongoDB
+# VARIABLES USADAS
 <p>
 db_mongo_compose_name: "{{appli_url}}-db"
 db_mongo_database_name: "nombredelaplicacion"
