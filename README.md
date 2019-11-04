@@ -21,55 +21,70 @@ db.createUser({ user: '{{db_mongo_user_backup}}', pwd: '{{db_mongo_password_back
 EOF
 ```
 
-<h2>OBTENER LOS USUARIOS DE UNA BASE DE DATOS </h2>
+### OBTENER LOS USUARIOS DE UNA BASE DE DATOS
 <pre>
 use basededatos
 db.getUsers()
 </pre>
 
-<h2> ELIMINAR USUARIO <h2>
+### ELIMINAR USUARIO
 <pre>
 db.dropUser("nombreusuario")
 </pre>
 
-<h1>COMANDOS BÁSICOS</h1>
+## COMANDOS BÁSICOS
 
-CREAR BASE DE DATOS
+### CREAR BASE DE DATOS
 <pre>
 use test_indus;
 </pre>
 
-INTRODUCIR DATOS EN LA BASE DE DATOS
+### INTRODUCIR DATOS EN LA BASE DE DATOS
 <pre>
 db.test_indus.save({id:'1'});
 </pre>
 
-LISTAR DATOS DE UNA BASE DE DATOS
+### LISTAR DATOS DE UNA BASE DE DATOS
+<pre>
 db.test_indus.find();
+</pre>
 
-BORRAR BASE DE DATOS
+### BORRAR BASE DE DATOS
+<pre>
 db.dropDatabase()
+</pre>
 
-ELIMINAR UN DATO DENTRO DE UNA BASE DE DATOS
+### ELIMINAR UN DATO DENTRO DE UNA BASE DE DATOS
+<pre>
 db.test_indus.remove({id:'4'})
+</pre>
 
-HACER UN PING A LA BASE MONGO
+### HACER UN PING A LA BASE MONGO
+<pre>
 mongo admin -u {{db_mongo_user_backup}} -p {{db_mongo_password_backup}} --authenticationDatabase admin --eval "db.runCommand({ping:1})"
+</pre>
 
-BACKUPS 
+## BACKUPS 
 
-COMANDO MONGO DUMP
+### COMANDO MONGO DUMP
+<pre>
 mongodump -u {{db_mongo_user_backup}} -p {{db_mongo_password_backup}} -h {{ db_mongo_compose_name }} --port {{db_mongo_port}} --gzip --archive=/save/cronned_backup_mongo_db.gz
+</pre>
 
-RESTORE
+## RESTORE
 
-COPIAR BACKUP AL CONTENEDOR DE BAS DE DATOS
+### COPIAR BACKUP AL CONTENEDOR DE BAS DE DATOS
+<pre>
 docker cp backup_mongo_db.gz nombrecontenedor:/tmp/
+</pre>
 
-RESTAURAR DESDE EL NODO
+### RESTAURAR DESDE EL NODO
+<pre>
 docker exec -it nombrecontenedor -u usuario -p contraseña --gzip --archive=/tmp/backup_mongo_db.gz 
+</pre>
 
-ESTAURAR DESDE DENTRO DEL CONTENEDOR
+### RESTAURAR DESDE DENTRO DEL CONTENEDOR
+``` 
 mongorestore -u usuario -p contraseña --gzip --archive=/tmp/backup_mongo_db.gz
 
 ((    si restauras un backup que está compuesto de muchos *.gz puedes realizar el siguiente comando:
@@ -80,25 +95,26 @@ Hay dos formas. Mediante EOF y mediante --eval
 
 	1. EOF: El ejemplo está en el script que puse arriba
 	2. EVAL: mongo admin -u usuarioadmin -p passusuarioadmin--eval "db.createUser({ user: 'usuarioacrear', pwd: 'passusuarioacrear', roles: [ { role: 'root', db: 'admin' } ] })";
+```
 
-COMO MONTAR UN REPLICASET CON SHARDING (Ejemplo: PSATracker)
+### COMO MONTAR UN REPLICASET CON SHARDING (Ejemplo: PSATracker)
 
-												⚠ Recomendable hacer un backup de la base de datos ⚠
-												Listado estructura que tenemos montada: 
-													w Nodo 1: contiene 3 contenedores
-														w contenedor-mongors1n1
-														w contenedor-mongocfg1
-														w contenedor-mongos1
-													w Nodo 2: contiene 3 contenedores
-														w contenedor-mongors1n2
-														w contenedor-mongocfg2
-														w contenedor-mongos2
-													w Nodo 3: contiene 3 contenedores
-														w contenedor-mongors1n3
-														w contenedor-mongocfg3
-														w contenedor-mongos3
+⚠ Recomendable hacer un backup de la base de datos ⚠
+Listado estructura que tenemos montada: 
+* Nodo 1: contiene 3 contenedores
+** contenedor-mongors1n1
+** contenedor-mongocfg1
+** contenedor-mongos1
+* Nodo 2: contiene 3 contenedores
+** contenedor-mongors1n2
+** contenedor-mongocfg2
+** contenedor-mongos2
+* Nodo 3: contiene 3 contenedores
+** contenedor-mongors1n3
+** contenedor-mongocfg3
+** contenedor-mongos3
 
-	1. docker exec -it contenedor-mongocfg1 bash
+1. docker exec -it contenedor-mongocfg1 bash
 mongo <<EOF
 rs.initiate( {_id: "mongors1conf", configsvr: true, members: [
 { "_id" : 0, host : "contenedor-mongocfg1" },
